@@ -35,4 +35,7 @@ public class Product {
     private String sku;
 
     private LocalDateTime createdAt;
+
+    //soft delete
+    private Boolean isActive = true;
 }

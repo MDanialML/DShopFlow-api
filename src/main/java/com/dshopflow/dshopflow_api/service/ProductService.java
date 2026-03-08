@@ -9,14 +9,13 @@ import java.util.List;
 
 @Service
 public class ProductService {
-
     private final ProductRepository productRepository;
     ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        return productRepository.findByIsActiveTrue();
     }
 
     public Product getProductById(Long id) {
@@ -26,11 +25,12 @@ public class ProductService {
 
     public  Product createProduct(Product product) {
         product.setCreatedAt(LocalDateTime.now());
+        product.setIsActive(true);
         return productRepository.save(product);
     }
 
     public Product updateProduct(Long id, Product updatedProduct) {
-        Product existingProduct = getProductById(updatedProduct.getId());
+        Product existingProduct = getProductById(id);
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setCategory(updatedProduct.getCategory());
         existingProduct.setDescription(updatedProduct.getDescription());
@@ -43,5 +43,8 @@ public class ProductService {
 
     public void deleteProductById(Long id) {
         productRepository.deleteById(id);
+        Product product = getProductById(id);
+        product.setIsActive(false);
+        productRepository.save(product);
     }
 }
