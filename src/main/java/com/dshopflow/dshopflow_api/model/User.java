@@ -30,7 +30,7 @@ public class User {
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private UserRole role;
 
     private LocalDateTime createdAt;
 }
