@@ -23,5 +23,5 @@ public class Shop {
 
     private Boolean isActive = true;
 
-    private LocalDateTime created;
+    private LocalDateTime createdAt;
 }
