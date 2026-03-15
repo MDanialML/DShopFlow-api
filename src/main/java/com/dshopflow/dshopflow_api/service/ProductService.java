@@ -37,8 +37,8 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product updateProduct(Long id, Product updatedProduct) {
-        Product existingProduct = getProductById(id);
+    public Product updateProduct(Long id, Product updatedProduct, Long shopId) {
+        Product existingProduct = getProductById(id, shopId);
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setCategory(updatedProduct.getCategory());
         existingProduct.setDescription(updatedProduct.getDescription());
@@ -49,9 +49,9 @@ public class ProductService {
         return productRepository.save(existingProduct);
     }
 
-    public void deleteProductById(Long id) {
+    public void deleteProductById(Long id,  Long shopId) {
         productRepository.deleteById(id);
-        Product product = getProductById(id);
+        Product product = getProductById(id, shopId);
         product.setIsActive(false);
         productRepository.save(product);
     }

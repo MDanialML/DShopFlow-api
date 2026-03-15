@@ -48,6 +48,9 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    //Extract shopId
+    public Long extractShopId(String token){ return extractClaim(token, claims -> Long.valueOf(claims.get("shopId").toString())); }
+
     //Extract role from token
     public String extractRole(String token){
         return extractClaim(token, claims -> claims.get("role", String.class));
