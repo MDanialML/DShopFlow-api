@@ -46,7 +46,7 @@ public class OrderService {
         order.setCustomerName(request.getCustomerName());
         order.setCustomerEmail(request.getCustomerEmail());
         order.setCustomerAddress(request.getCustomerAddress());
-        order.setOrderStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.PENDING);
         order.setPaymentStatus(PaymentStatus.UNPAID);
         order.setOrderDate(LocalDateTime.now());
 
@@ -95,7 +95,7 @@ public class OrderService {
 
     public Order updateOrderStatus(Long id, OrderStatus status){
         Order order = getOrderById(id);
-        order.setOrderStatus(status);
+        order.setStatus(status);
         return orderRepository.save(order);
     }
 

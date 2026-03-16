@@ -33,7 +33,7 @@ public class Order {
     private String customerAddress;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus = OrderStatus.PENDING;
+    private OrderStatus status = OrderStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
