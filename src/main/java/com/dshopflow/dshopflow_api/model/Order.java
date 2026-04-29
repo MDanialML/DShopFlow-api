@@ -24,6 +24,9 @@ public class Order {
             nullable = false)
     private Shop shop;
 
+    //stripe check out session id
+    private String stripeSessionId;
+
     @Column(nullable = false)
     private String customerName;
 
