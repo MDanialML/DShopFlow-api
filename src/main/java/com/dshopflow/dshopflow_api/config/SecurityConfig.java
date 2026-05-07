@@ -32,6 +32,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**")
                         .permitAll()
+                        .requestMatchers("/api/webhooks/**").permitAll()
+                        .requestMatchers("/api/payments/mock-checkout/**").permitAll()
                         .requestMatchers("/api/products/**")
                         .hasAnyRole("OWNER", "STAFF", "SUPER_ADMIN")
                         .requestMatchers("/api/orders/**")

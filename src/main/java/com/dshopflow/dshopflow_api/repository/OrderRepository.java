@@ -15,4 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByIdAndShopId(Long id, Long shopId);
 
     List<Order> findByShopIdAndStatus(Long shopId, OrderStatus status);
+
+    Optional<Order> findByStripeSessionId(String sessionId);
 }
