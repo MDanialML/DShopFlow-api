@@ -24,7 +24,7 @@ public class WebhookController {
             String sigHeader){
         //Signature verification goes here
         //when real Stripe is integerated
-        return ResponseEntity.ok("recieved");
+        return ResponseEntity.ok("received");
     }
 
     //Mock webhook trigger - You call this during testing

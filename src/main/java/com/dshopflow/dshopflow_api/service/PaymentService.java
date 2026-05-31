@@ -43,7 +43,7 @@ public class PaymentService {
         //generate mock session
         String sessionId = "cs_mock" + UUID.randomUUID().toString().replace("-", "");
 
-        String checkoutUrl = "http:localhost:8080/api/payments"+"/mock-checkout" + sessionId;
+        String checkoutUrl = "http://localhost:8080/api/payments"+"/mock-checkout" + sessionId;
 
         //save session ID to order
         order.setStripeSessionId(sessionId);
