@@ -17,10 +17,12 @@ import java.util.List;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final WebSocketService webSocketService;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository,  WebSocketService webSocketService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.webSocketService = webSocketService;
     }
 
     @Transactional
@@ -61,9 +63,14 @@ public class OrderService {
             product.setStockQty(product.getStockQty() - itemRequest.getQuantity());
             productRepository.save(product);
 
+            //send real-time inventory update
+            webSocketService.sendInventoryUpdate(order.getShop().getId(), product );
+
             //check low stock threshold
-            if (product.getStockQty() <= product.getLowStockThreshold()){
+            if (product.getLowStockThreshold() != null &&
+                    product.getStockQty() <= product.getLowStockThreshold()){
                 System.out.println("LOW STOCK ALERT: " + product.getName() + "only " + product.getStockQty() + "units remaining");
+                webSocketService.sendLowStockAlert(order.getShop().getId(), product);
             }
 
             //build order item
@@ -80,7 +87,9 @@ public class OrderService {
         //step 4 - finalize and save
         order.setTotalAmount(totalAmount);
         order.setOrderItems(orderItems);
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        webSocketService.sendNewOrder(order.getShop().getId(), savedOrder);
+        return savedOrder;
     }
 
     public List<Order> getAllOrders(){
