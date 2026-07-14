@@ -6,6 +6,7 @@ import com.dshopflow.dshopflow_api.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Product> createProduct(
             @RequestBody Product product,
             HttpServletRequest request) {
@@ -50,6 +52,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long id,
             @RequestBody Product product,
@@ -61,6 +64,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long id,
             HttpServletRequest request) {
