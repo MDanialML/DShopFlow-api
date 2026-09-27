@@ -50,7 +50,7 @@ public class ProductService {
     }
 
     public void deleteProductById(Long id,  Long shopId) {
-        productRepository.deleteById(id);
+//        productRepository.deleteById(id);
         Product product = getProductById(id, shopId);
         product.setIsActive(false);
         productRepository.save(product);

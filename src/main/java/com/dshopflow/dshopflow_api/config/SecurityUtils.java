@@ -16,7 +16,15 @@ public class SecurityUtils {
     public Long getShopId(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
-        return jwtService.extractShopId(token);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")){
+            throw new RuntimeException("No Authorization header ");
+        }
+
+        Long shopId = jwtService.extractShopId(token);
+        if (shopId == null){
+            throw new RuntimeException("ShopId not found in token");
+        }
+        return  shopId;
     }
 
     public String getRole(HttpServletRequest request) {

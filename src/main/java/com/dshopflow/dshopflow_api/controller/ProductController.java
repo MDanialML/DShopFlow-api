@@ -41,7 +41,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('OWNER')")
+    //@PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Product> createProduct(
             @RequestBody Product product,
             HttpServletRequest request) {
