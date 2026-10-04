@@ -21,13 +21,15 @@ public class WebSocketService {
     public void sendInventoryUpdate(Long shopId, Product product){
         String destination = "/topic/shop/" + shopId + "/inventory";
 
+        //check low stock
+        boolean isLowStock = product.getLowStockThreshold() != null && product.getStockQty() <= product.getLowStockThreshold();
         InventoryUpdateMessage message =
                 new InventoryUpdateMessage(
                         product.getId(),
                         product.getName(),
                         product.getStockQty(),
                         product.getLowStockThreshold(),
-                        product.getStockQty() <= product.getLowStockThreshold()
+                        isLowStock
                 );
         messsagingTemplate.convertAndSend(destination, message);
     }

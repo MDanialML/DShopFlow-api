@@ -4,6 +4,7 @@ import com.dshopflow.dshopflow_api.dto.OrderItemRequest;
 import com.dshopflow.dshopflow_api.dto.OrderRequest;
 import com.dshopflow.dshopflow_api.model.*;
 import com.dshopflow.dshopflow_api.repository.ProductRepository;
+import com.dshopflow.dshopflow_api.repository.ShopRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.dshopflow.dshopflow_api.repository.OrderRepository;
@@ -18,15 +19,20 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final WebSocketService webSocketService;
+    private final ShopRepository shopRepository;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository,  WebSocketService webSocketService) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, WebSocketService webSocketService, ShopRepository shopRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.webSocketService = webSocketService;
+        this.shopRepository = shopRepository;
+
     }
 
     @Transactional
-    public Order createOrder(OrderRequest request){
+    public Order createOrder(OrderRequest request, long shopId){
+
+
         //validate all product and stock before touching anything
         HashMap<Long, Product> validatedProducts =  new HashMap<>();
         for(OrderItemRequest itemRequest : request.getItems()){
@@ -35,7 +41,8 @@ public class OrderService {
             if(!product.getIsActive()){
                 throw new RuntimeException("Product is not available: " + product.getName());
             }
-            if(product.getStockQty() < itemRequest.getQuantity()){
+
+            if (product.getStockQty() < itemRequest.getQuantity()) {
                 throw new RuntimeException(
                         "Insufficient stock for: " + product.getName() +
                                 ". Available: " + product.getStockQty() +
@@ -44,7 +51,10 @@ public class OrderService {
             validatedProducts.put(itemRequest.getProductId(),  product);
         }
         //step 2: all products valid, now build the order
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(()-> new RuntimeException("Shop id not found :" + shopId));
         Order order = new Order();
+        order.setShop(shop);
         order.setCustomerName(request.getCustomerName());
         order.setCustomerEmail(request.getCustomerEmail());
         order.setCustomerAddress(request.getCustomerAddress());
@@ -60,6 +70,12 @@ public class OrderService {
                     itemRequest.getProductId());
 
             //deduct stock
+            if(product.getLowStockThreshold() != null && product.getStockQty() <= itemRequest.getQuantity()){
+                throw new RuntimeException(
+                        "Insufficient stock for: " + product.getName() +
+                                ". Available: " + product.getStockQty() +
+                                ", Requested: " + itemRequest.getQuantity());
+            }
             product.setStockQty(product.getStockQty() - itemRequest.getQuantity());
             productRepository.save(product);
 
@@ -77,6 +93,7 @@ public class OrderService {
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
+            orderItem.setProductName(product.getName());
             orderItem.setQuantity(itemRequest.getQuantity());
             orderItem.setUnitPrice(product.getPrice());
             orderItem.setSubTotal(product.getPrice() * itemRequest.getQuantity());
